@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import os
+import requests
+import shutil
+import sys
+from bs4 import BeautifulSoup
+
+base_path = sys.argv[1]
+os.makedirs(base_path, exist_ok=True)
+
+count = 0
+soup = BeautifulSoup(sys.stdin.read(), 'html5lib')
+for link in soup.findAll('img'):
+    url = link.get('src')
+    if url:
+        count += 1
+        r = requests.get(url, stream=True)
+        if r.status_code == 200:
+            path = "{}/image-{}".format(base_path, count)
+            with open(path, 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
+            link['src'] = "file://{}".format(path)
+        else:
+            link['src'] = '#'
+with open("{}/index.html".format(base_path), "w") as file:
+        file.write(str(soup))

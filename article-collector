@@ -2,11 +2,16 @@
 BASE_FILENAME="articles-from-$(date +"%Y_%m_%d_%I_%M_%p")"
 HTML_FILE="/tmp/$BASE_FILENAME.html"
 MOBI_FILE="/tmp/$BASE_FILENAME.mobi"
+COUNT=0
 for URL in $(cat $1); do
-  curl -sL "$URL" | ~/Projects/readability-terminal/bin/readability "$URL" >> $HTML_FILE
+  COUNT=$((COUNT + 1))
+  ARTICLE_DIR="/tmp/working-article-$COUNT"
+  curl -sL "$URL" | ~/Projects/readability-terminal/bin/readability "$URL" | ~/Projects/article-tools/fetch-images-for-article $ARTICLE_DIR
+  cat $ARTICLE_DIR/index.html >> $HTML_FILE
   echo "<hr>" >> $HTML_FILE
 done
 
 ebook-convert $HTML_FILE $MOBI_FILE --level1-toc //h:h1  
 echo "here" | mail -s "here is a book" -a $MOBI_FILE -r $FROM_EMAIL $KINDLE_EMAIL
 rm -f $HTML_FILE $MOBI_FILE
+rm -rf /tmp/working-article-*/
