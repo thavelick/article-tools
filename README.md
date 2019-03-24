@@ -18,6 +18,6 @@ This takes a file with a list of article urls and:
 Usage:
 
 ```
-FROM_EMAIL=tristan@havelick.com KINDLE_EMAIL=youname_0f0f0f@kindle.com ./article-collector articles-list
+FROM_EMAIL=yourname@example.com KINDLE_EMAIL=youname_0f0f0f@kindle.com ./article-collector articles-list
 ```
 
