@@ -1,0 +1,12 @@
+#!/bin/bash
+BASE_FILENAME="articles-from-$(date +"%Y_%m_%d_%I_%M_%p")"
+HTML_FILE="/tmp/$BASE_FILENAME.html"
+MOBI_FILE="/tmp/$BASE_FILENAME.mobi"
+for URL in $(cat $1); do
+  curl -sL "$URL" | ~/Projects/readability-terminal/bin/readability "$URL" >> $HTML_FILE
+  echo "<hr>" >> $HTML_FILE
+done
+
+ebook-convert $HTML_FILE $MOBI_FILE --level1-toc //h:h1  
+echo "here" | mail -s "here is a book" -a $MOBI_FILE -r $FROM_EMAIL $KINDLE_EMAIL
+rm -f $HTML_FILE $MOBI_FILE
